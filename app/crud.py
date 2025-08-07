@@ -10,15 +10,20 @@ def get_list_of_books(session : SessionDep,
                             year : int | None = None,
                             limit : Annotated[int | None, Query(gt=0, le=100)] = None,
                             offset : Annotated[int, Query(ge=0, le=100)] = 0,
+                            sort_by = Annotated[str | None, Query(default=None, enum = ["title", "year"])]
                             ):
     statement = select(Book)
-    
     if author:
         statement = statement.where(Book.author == author)
     if year:
         statement = statement.where(Book.year == year)
+    if sort_by:
+        column = getattr(Book, sort_by)
+        statement = statement.order_by(column)
+    if limit:
+        statement = statement.limit(limit)
 
-    books = session.exec(statement.offset(offset).limit(limit)).all()
+    books = session.exec(statement.offset(offset)).all()
     return books
 
 def create_book(new_book : BookCreate, session : SessionDep):

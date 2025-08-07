@@ -19,8 +19,9 @@ async def get_list_of_books(session : SessionDep,
                             year : int | None = None,
                             limit : Annotated[int | None, Query(gt=0, le=100)] = None,
                             offset : Annotated[int, Query(ge=0, le=100)] = 0,
+                            sort_by = Annotated[str | None, Query(default=None, enum = ["title", "year"])]
                             ):
-    books = crud.get_list_of_books(session, author, year, limit, offset)
+    books = crud.get_list_of_books(session, author, year, limit, offset, sort_by)
     if not books:
         raise HTTPException(
             status_code=404,
