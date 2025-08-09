@@ -15,13 +15,14 @@ router = APIRouter(
 
 @router.get("/", response_model=list[BookRead])
 async def get_list_of_books(session : SessionDep,
+                            offset : Annotated[int, Query(ge=0, le=100)] = 0,
                             author: str | None = None,
                             year : int | None = None,
                             limit : Annotated[int | None, Query(gt=0, le=100)] = None,
-                            offset : Annotated[int, Query(ge=0, le=100)] = 0,
-                            sort_by = Annotated[str | None, Query(default=None, enum = ["title", "year"])]
+                            sort_by : Annotated[str | None, Query(enum = ["title", "year"])] = None,
                             ):
-    books = crud.get_list_of_books(session, author, year, limit, offset, sort_by)
+    print(f"FROM ENDPOINT: sort_by = {sort_by}, type = {type(sort_by)}")
+    books = crud.get_list_of_books(session, offset, author, year, limit, sort_by)
     if not books:
         raise HTTPException(
             status_code=404,

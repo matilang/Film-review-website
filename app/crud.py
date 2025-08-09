@@ -1,28 +1,30 @@
 from .models import Book, Review
 from .dependencies import SessionDep
 from .schemas import BookCreate, BookRead, BookUpdate, ReviewCreate
-from typing import Annotated
-from fastapi import Query, HTTPException
+from fastapi import HTTPException
 from sqlmodel import select, func
 
 def get_list_of_books(session : SessionDep,
+                            offset : int,
                             author: str | None = None,
                             year : int | None = None,
-                            limit : Annotated[int | None, Query(gt=0, le=100)] = None,
-                            offset : Annotated[int, Query(ge=0, le=100)] = 0,
-                            sort_by = Annotated[str | None, Query(default=None, enum = ["title", "year"])]
+                            limit : int | None = None,
+                            sort_by : str | None = None,
                             ):
     statement = select(Book)
     if author:
         statement = statement.where(Book.author == author)
     if year:
         statement = statement.where(Book.year == year)
+    if limit:
+        statement = statement.limit(limit)
     if sort_by:
         column = getattr(Book, sort_by)
         statement = statement.order_by(column)
-    if limit:
-        statement = statement.limit(limit)
-
+    count_books = select(func.count()).select_from(statement.subquery())
+    count_books = session.exec(count_books).one()
+    if offset > count_books:
+        raise HTTPException(status_code=404, detail=f"Offset {offset} exeeds total number of matching books {count_books}")
     books = session.exec(statement.offset(offset)).all()
     return books
 
