@@ -12,19 +12,13 @@ The project's focus is on practical applications using FastAPI, relational datab
 - Implement SQLite-based database -> in future PostgreSQL
 - Remembering about sorting, pagination, and filtering features
 
-## Getting Started
+## Future plans
 
-### Prerequisites
+1. Developing tests for the backend
+2. Learn and project more developed database (PostgreSQL) while developing new features of setting up accounts
+3. Build a simple front for the website in React.js
+4. Deploy project to the web 
 
-- Python 3.8+
-- Git (optional, for version control)
 
-### Installation
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/matilang/task-manager-api.git
-cd task-manager-api
 
 
