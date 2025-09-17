@@ -1,20 +1,24 @@
-from ..schemas import ReviewCreate, ReviewUpdate, ReviewRead
-from ..dependencies import SessionDep
+from ..schemas import ReviewCreate, ReviewUpdate, ReviewRead, UserRead
+from ..dependencies import SessionDep, get_current_active_user, get_session, get_current_user
 from ..models import Book
 from app import crud
-from fastapi import APIRouter, Query, HTTPException, status, BackgroundTasks
+from fastapi import APIRouter, Query, HTTPException, status, BackgroundTasks, Depends
 from ..utils import write_message
+from typing import Annotated
+from sqlmodel import Session
 
 
 router = APIRouter(prefix="/books/{book_id}",
                    tags=["reviews"])
 
 @router.post("/reviews", response_model=ReviewRead, status_code=status.HTTP_201_CREATED)
-async def add_review(review : ReviewCreate, session : SessionDep, backgroundemail : BackgroundTasks):
+async def add_review(review : ReviewCreate,
+                     session : Session = Depends(get_session),
+                     ):
     create_review = crud.add_review(review, session)
     if not create_review:
         raise HTTPException(status_code=404, detail="Book not found")
-    backgroundemail.add_task(write_message,"my.email@wp.pl", "Review created!!")
+    # backgroundemail.add_task(write_message,"my.email@wp.pl", "Review created!!")
     return create_review
 
 @router.get("/reviews", response_model=list[ReviewRead])

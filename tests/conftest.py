@@ -4,6 +4,7 @@ from sqlmodel import SQLModel, create_engine, Session
 
 from app.main import app
 from app.dependencies import get_session
+from app.schemas import UserInDb
 
 
 TEST_DATABASE_URL = "sqlite:///./test.db"
@@ -66,4 +67,28 @@ def sample_list_of_reviews(client, sample_book):
         reviews.append(response.json())
     
     return reviews
+
+@pytest.fixture
+def sample_user_registration(session):
+    from app.models import User
+    from app.security import hash_password
+
+    hashed = hash_password("test_password")
+    user = User(username="test_user", hashed_password=hashed, email="test@email.com")
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return UserInDb.model_validate(user)
+
+@pytest.fixture
+def sample_user_login(client, sample_user_registration):
+    password = "test_password"
+    response = client.post(
+    "/auth/login",
+    data={
+        "username": sample_user_registration.username,
+        "password": password},
+    headers={"Content-Type": "application/x-www-form-urlencoded"}
+    )
+    return response.json()
     
