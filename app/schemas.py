@@ -27,21 +27,20 @@ class ReviewRead(BaseModel):
     book_id : int
     review_text : str
     rating : float
+    
+    model_config = {
+       "from_attributes" : True
+    }
 
 class ReviewUpdate(BaseModel):
     review_text : str | None = None
     rating : float | None = Field(default=None, ge=1, le=5)
     
 class UserCreate(BaseModel):
-    id : int
     username : str
     password : str
-    email : str | None
+    email : str | None = None
     full_name : str | None = None
-
-class UserLogin(BaseModel):
-    username : str
-    password : str
     
 class UserRead(BaseModel):
     id : int
@@ -49,6 +48,10 @@ class UserRead(BaseModel):
     email : str | None
     full_name : str | None = None
     disabled : bool | None = None
+    
+    model_config = {
+       "from_attributes" : True
+    }
 
 class UserInDb(UserRead):
     hashed_password : str
