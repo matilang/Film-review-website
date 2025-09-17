@@ -1,12 +1,12 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import select
 from datetime import timedelta
-from .main import app
-from .schemas import UserCreate, UserLogin, UserRead, UserInDb, Token
+from .schemas import UserCreate, UserRead, Token
 from .dependencies import SessionDep, Session
-from .security import hash_password, verify_password
+from .security import verify_password
 from .models import User
-from .crud import get_user
+from .crud import get_user, add_user
 from .security import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 
 def authenticate_user(db : Session, username : str, password : str):
@@ -22,18 +22,16 @@ router = APIRouter(
     tags=['auth'],
 )
 
-@router.post("/register", response_model=UserRead)
+@router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 async def user_register(user : UserCreate, session : SessionDep):
-    hashed_password = hash_password(user.password)
-    db_user = User(username = user.username, hashed_password=hashed_password, email=user.email)
-    session.add(db_user)
-    session.commit()
-    session.refresh(db_user)
-    return db_user
+    db_user = add_user(session, user)
+    if db_user is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Wrong username or password")
+    return UserRead.model_validate(db_user)
 
 @router.post("/login", response_model=Token)
-async def user_login(user : UserLogin, session : SessionDep):
-    user = authenticate_user(session, user.username, user.password)
+async def user_login(session : SessionDep, form_data : OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(session, form_data.username, form_data.password)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
