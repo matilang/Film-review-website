@@ -20,3 +20,4 @@ def test_check_token(client, sample_user_registration):
 def test_get_current_user(session, sample_user_registration, sample_user_login):
     user = get_current_user(sample_user_login['access_token'], session)
     assert isinstance(user, UserRead)
+

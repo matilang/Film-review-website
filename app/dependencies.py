@@ -12,8 +12,9 @@ def get_session():
     with Session(engine) as session:
         yield session
         
+SessionDep = Annotated[Session, Depends(get_session)]
 
-def get_current_user(token : Annotated[str, Depends(oauth2scheme)], db : Session):
+def get_current_user(token : Annotated[str, Depends(oauth2scheme)], db : SessionDep):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -32,7 +33,7 @@ def get_current_user(token : Annotated[str, Depends(oauth2scheme)], db : Session
         raise credentials_exception
     return UserRead.model_validate(user)
 
-SessionDep = Annotated[Session, Depends(get_session)]
+UserDep = Annotated[UserInDb, Depends(get_current_user)]
 
 def get_current_active_user(current_user : Annotated[UserRead, Depends(get_current_user)]):
         if current_user.disabled:

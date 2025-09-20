@@ -1,5 +1,5 @@
 from ..schemas import ReviewCreate, ReviewUpdate, ReviewRead, UserRead
-from ..dependencies import SessionDep, get_current_active_user, get_session, get_current_user
+from ..dependencies import SessionDep, get_current_active_user, get_session, get_current_user, UserDep
 from ..models import Book
 from app import crud
 from fastapi import APIRouter, Query, HTTPException, status, BackgroundTasks, Depends
@@ -13,7 +13,8 @@ router = APIRouter(prefix="/books/{book_id}",
 
 @router.post("/reviews", response_model=ReviewRead, status_code=status.HTTP_201_CREATED)
 async def add_review(review : ReviewCreate,
-                     session : Session = Depends(get_session),
+                     session : SessionDep,
+                     current_user : UserDep
                      ):
     create_review = crud.add_review(review, session)
     if not create_review:
