@@ -1,77 +1,77 @@
-## CRUD testing books
+## CRUD testing films
 
 
-def test_get_list_of_books(client, sample_list_of_books):    
-    response = client.get("/books/")
+def test_get_list_of_films(client, sample_list_of_films):    
+    response = client.get("/films/")
     assert response.status_code == 200
     
     data = response.json()
     assert isinstance(data, list)
-    assert len(data) == len(sample_list_of_books)
+    assert len(data) == len(sample_list_of_films)
     
-    for book in data:
-        assert "title" in book
-        assert "author" in book
-        assert "year" in book
+    for film in data:
+        assert "title" in film
+        assert "author" in film
+        assert "year" in film
 
-def test_get_list_of_books_with_limits(client, sample_list_of_books):    
-    response = client.get("/books/?offset=1")
+def test_get_list_of_films_with_limits(client, sample_list_of_films):    
+    response = client.get("/films/?offset=1")
     assert response.status_code == 200
-    assert len(response.json()) == len(sample_list_of_books)-1
+    assert len(response.json()) == len(sample_list_of_films)-1
     
-    response = client.get("/books/?author=Author C")
+    response = client.get("/films/?author=Author C")
     assert response.status_code == 200
-    assert len(response.json()) == len(sample_list_of_books)-2
+    assert len(response.json()) == len(sample_list_of_films)-2
     
-    response = client.get("/books/?year=2000")
+    response = client.get("/films/?year=2000")
     assert response.status_code == 200
-    assert len(response.json()) == len(sample_list_of_books)-2
+    assert len(response.json()) == len(sample_list_of_films)-2
     
-    response = client.get("/books/?limit=1")
+    response = client.get("/films/?limit=1")
     assert response.status_code == 200
-    assert len(response.json()) == len(sample_list_of_books)-2
+    assert len(response.json()) == len(sample_list_of_films)-2
 
-def test_create_book(client):
+def test_create_film(client):
     
-    book = {"title" : "Book A", "author" : "Author A", "year" : 2000}
-    response = client.post("/books/", json=book)
+    film = {"title" : "Film A", "author" : "Author A", "year" : 2000}
+    response = client.post("/films/", json=film)
     assert response.status_code == 201
     
-    assert response.json()['title'] == book['title']
-    assert response.json()['author'] == book['author']
-    assert response.json()['year'] == book["year"]
+    assert response.json()['title'] == film['title']
+    assert response.json()['author'] == film['author']
+    assert response.json()['year'] == film["year"]
     assert 'id' in response.json()
 
-def test_get_book_by_id(client, sample_list_of_books):
-    book_id = sample_list_of_books[0]['id']
-    response = client.get(f"/books/{book_id}")
+def test_get_film_by_id(client, sample_list_of_films):
+    film_id = sample_list_of_films[0]['id']
+    response = client.get(f"/films/{film_id}")
     assert response.status_code == 200
-    assert response.json()['id'] == book_id
-    assert response.json()['title'] == sample_list_of_books[0]['title']
+    assert response.json()['id'] == film_id
+    assert response.json()['title'] == sample_list_of_films[0]['title']
     
-def test_update_book(client, sample_book):
-    book_id = sample_book['id']
-    original_book_title = sample_book["title"]
+def test_update_film(client, sample_film):
+    film_id = sample_film['id']
+    original_film_title = sample_film["title"]
     
-    response = client.get(f"/books/{book_id}")
+    response = client.get(f"/films/{film_id}")
     assert response.status_code == 200
-    assert response.json()['id'] == book_id
-    assert response.json()['title'] == original_book_title
+    assert response.json()['id'] == film_id
+    assert response.json()['title'] == original_film_title
     
-    new_book_title = "New Book"
-    response = client.patch(f"/books/{book_id}", json={"title" : new_book_title})
+    new_film_title = "New Film"
+    response = client.patch(f"/films/{film_id}", json={"title" : new_film_title})
     assert response.status_code == 200
-    assert response.json()['title'] == new_book_title
-    assert response.json()['id'] == book_id
+    assert response.json()['title'] == new_film_title
+    assert response.json()['id'] == film_id
 
-def test_delete_book(client, sample_book):
-    book_id = sample_book['id']
-    response = client.get(f"/books/{book_id}")
+def test_delete_film(client, sample_film):
+    film_id = sample_film['id']
+    response = client.get(f"/films/{film_id}")
     assert response.status_code == 200
     
-    response = client.delete(f"books/{book_id}")
+    response = client.delete(f"films/{film_id}")
     assert response.status_code == 200
     
-    response = client.get(f"books/{book_id}")
+    response = client.get(f"films/{film_id}")
     assert response.status_code == 404
     

@@ -30,40 +30,40 @@ def client_fixture(session: Session):
     yield TestClient(app)
     app.dependency_overrides.clear()
 
-#fixture creating sample book
+#fixture creating sample film
 @pytest.fixture
-def sample_book(client):
-    response = client.post("/books/", json = {
-        "title" : "Book A", "author" : "Author A", "year" : 2000
+def sample_film(client):
+    response = client.post("/films/", json = {
+        "title" : "Film A", "author" : "Author A", "year" : 2000
     })
     return response.json()
 
 @pytest.fixture
-def sample_list_of_books(client):
-    books = []
+def sample_list_of_films(client):
+    films = []
     for data in [
-        {"title": "Book A", "author": "Author A", "year": 2000},
-        {"title": "Book B", "author": "Author B", "year": 1992},
-        {"title": "Book C", "author": "Author C", "year": 2010},
+        {"title": "Film A", "author": "Author A", "year": 2000},
+        {"title": "Film B", "author": "Author B", "year": 1992},
+        {"title": "Film C", "author": "Author C", "year": 2010},
     ]:
-        response = client.post("/books/", json=data)
-        books.append(response.json())
+        response = client.post("/films/", json=data)
+        films.append(response.json())
 
-    return books
+    return films
 
 @pytest.fixture
-def sample_list_of_reviews(client, sample_book):
-    book_id = sample_book['id']
+def sample_list_of_reviews(client, sample_film):
+    film_id = sample_film['id']
     review_text = "Review test content"
     reviews = []
     
     for data in [
-        {"book_id": book_id, "review_text": review_text, "rating": 2.3},
-        {"book_id": book_id, "review_text": review_text, "rating": 5},
-        {"book_id": book_id, "review_text": review_text, "rating": 4.33},
+        {"film_id": film_id, "review_text": review_text, "rating": 2.3},
+        {"film_id": film_id, "review_text": review_text, "rating": 5},
+        {"film_id": film_id, "review_text": review_text, "rating": 4.33},
     ]:
 
-        response = client.post(f"/books/{book_id}/reviews/", json = data)
+        response = client.post(f"/films/{film_id}/reviews/", json = data)
         reviews.append(response.json())
     
     return reviews

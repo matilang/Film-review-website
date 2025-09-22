@@ -1,7 +1,7 @@
 ## authentication token tests
 import jwt
 from app.security import ALGORITHM, SECRET_KEY
-from app.dependencies import get_current_user, get_current_active_user
+from app.dependencies import get_current_user
 from app.schemas import UserRead
 
 def test_check_token(client, sample_user_registration):
