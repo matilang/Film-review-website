@@ -5,7 +5,6 @@ from datetime import timedelta
 from .schemas import UserCreate, UserRead, Token
 from .dependencies import SessionDep, Session
 from .security import verify_password
-from .models import User
 from .crud import get_user, add_user
 from .security import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 

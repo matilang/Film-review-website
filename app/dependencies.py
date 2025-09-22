@@ -1,11 +1,10 @@
-from fastapi import FastAPI, Depends, status, HTTPException
+from fastapi import Depends, status, HTTPException
 from .db import engine
 from typing import Annotated
 from sqlmodel import Session
 from .security import oauth2scheme, decode_access_token
 from jwt.exceptions import InvalidTokenError
 from .crud import get_user
-from .models import User
 from .schemas import UserInDb, UserRead
 
 def get_session():
