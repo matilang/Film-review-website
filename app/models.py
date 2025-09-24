@@ -4,7 +4,7 @@ from sqlmodel import SQLModel, Field, Relationship
 class Film(SQLModel, table=True):
     id : int | None = Field(default=None, primary_key=True)
     title : str
-    author : str
+    director : str
     year : int = Field(gt=0)
     review : list["Review"] = Relationship(back_populates="film")
 

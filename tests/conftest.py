@@ -34,7 +34,7 @@ def client_fixture(session: Session):
 @pytest.fixture
 def sample_film(client):
     response = client.post("/films/", json = {
-        "title" : "Film A", "author" : "Author A", "year" : 2000
+        "title" : "Film A", "director" : "Director A", "year" : 2000
     })
     return response.json()
 
@@ -42,9 +42,8 @@ def sample_film(client):
 def sample_list_of_films(client):
     films = []
     for data in [
-        {"title": "Film A", "author": "Author A", "year": 2000},
-        {"title": "Film B", "author": "Author B", "year": 1992},
-        {"title": "Film C", "author": "Author C", "year": 2010},
+        {"id": i, "title": f"Film {chr(64+i)}", "year": 2000 + i, "director": f"Director {['A','B','C','D', 'E'][i % 5]}"}
+        for i in range(1, 21)
     ]:
         response = client.post("/films/", json=data)
         films.append(response.json())
@@ -52,7 +51,7 @@ def sample_list_of_films(client):
     return films
 
 @pytest.fixture
-def sample_list_of_reviews(client, sample_film):
+def sample_list_of_reviews(client, sample_film, sample_user_registration, sample_user_login):
     film_id = sample_film['id']
     review_text = "Review test content"
     reviews = []
@@ -63,7 +62,10 @@ def sample_list_of_reviews(client, sample_film):
         {"film_id": film_id, "review_text": review_text, "rating": 4.33},
     ]:
 
-        response = client.post(f"/films/{film_id}/reviews/", json = data)
+        response = client.post(f"/films/{film_id}/reviews/", json = data,
+                               headers= {
+            "Authorization" : f"Bearer {sample_user_login['access_token']}"
+        })
         reviews.append(response.json())
     
     return reviews
@@ -83,6 +85,7 @@ def sample_user_registration(session):
 @pytest.fixture
 def sample_user_login(client, sample_user_registration):
     password = "test_password"
+    
     response = client.post(
     "/auth/login",
     data={

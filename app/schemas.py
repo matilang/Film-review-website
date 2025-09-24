@@ -3,18 +3,18 @@ from pydantic import BaseModel
 
 class FilmCreate(BaseModel):
     title : str
-    author : str
+    director : str
     year : int = Field(gt=0)
     
 class FilmRead(BaseModel):
     id : int
     title : str
-    author : str
+    director : str
     year : int
 
 class FilmUpdate(BaseModel):
     title : str | None = None
-    author : str | None = None
+    director : str | None = None
     year : int | None = Field(default=None, ge=0)
 
 class ReviewCreate(BaseModel):

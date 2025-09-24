@@ -14,13 +14,13 @@ router = APIRouter(
 @router.get("/", response_model=list[FilmRead])
 async def get_list_of_films(session : SessionDep,
                             offset : Annotated[int, Query(ge=0, le=100)] = 0,
-                            author: str | None = None,
+                            director: str | None = None,
                             year : int | None = None,
                             limit : Annotated[int | None, Query(gt=0, le=100)] = None,
                             sort_by : Annotated[str | None, Query(enum = ["title", "year"])] = None,
                             ):
     print(f"FROM ENDPOINT: sort_by = {sort_by}, type = {type(sort_by)}")
-    films = crud.get_list_of_films(session, offset, author, year, limit, sort_by)
+    films = crud.get_list_of_films(session, offset, director, year, limit, sort_by)
     if not films:
         raise HTTPException(
             status_code=404,

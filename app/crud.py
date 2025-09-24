@@ -6,14 +6,14 @@ from .security import hash_password
 
 def get_list_of_films(db : Session,
                             offset : int,
-                            author: str | None = None,
+                            director: str | None = None,
                             year : int | None = None,
                             limit : int | None = None,
                             sort_by : str | None = None,
                             ):
     statement = select(Film)
-    if author:
-        statement = statement.where(Film.author == author)
+    if director:
+        statement = statement.where(Film.director == director)
     if year:
         statement = statement.where(Film.year == year)
     if limit:
@@ -30,6 +30,8 @@ def get_list_of_films(db : Session,
 
 def create_film(new_film : FilmCreate, db : Session):
     film = Film(**new_film.model_dump())
+    if not film:
+        return None
     db.add(film)
     db.commit()
     db.refresh(film)
@@ -41,8 +43,10 @@ def get_film_by_id(film_id : int, db : Session):
 
 def update_film(film_id : int, new_details : FilmUpdate, db: Session):
     film = db.get(Film, film_id)
-    if new_details.author:
-        film.author = new_details.author
+    if not film:
+        return None
+    if new_details.director:
+        film.director = new_details.director
     if new_details.title:
         film.title = new_details.title
     if new_details.year:
@@ -73,6 +77,8 @@ def add_review(review : ReviewCreate, db : Session):
 def get_all_reviews(film_id : int, db: Session):
     statement = select(Review).where(Review.film_id == film_id)
     result = db.exec(statement).all()
+    if not result:
+        return None
     return [ReviewRead.model_validate(r) for r in result]
         
 def get_rating_average(film_id : int, db : Session):
