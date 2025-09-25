@@ -2,7 +2,8 @@ from fastapi import APIRouter, Query, HTTPException, status
 from ..dependencies import SessionDep
 from ..schemas import FilmUpdate, FilmCreate, FilmRead
 from app import crud
-from typing import Annotated
+from typing import Annotated, Optional
+from enum import Enum
 
 
 router = APIRouter(
@@ -11,15 +12,18 @@ router = APIRouter(
     responses={404: {"description" : "Not found"}},
 )
 
+class SortByEnum(str, Enum):
+    title = "title"
+    year = "year"
+
 @router.get("/", response_model=list[FilmRead])
 async def get_list_of_films(session : SessionDep,
                             offset : Annotated[int, Query(ge=0, le=100)] = 0,
                             director: str | None = None,
                             year : int | None = None,
                             limit : Annotated[int | None, Query(gt=0, le=100)] = None,
-                            sort_by : Annotated[str | None, Query(enum = ["title", "year"])] = None,
+                            sort_by: Optional[SortByEnum] = Query(None),
                             ):
-    print(f"FROM ENDPOINT: sort_by = {sort_by}, type = {type(sort_by)}")
     films = crud.get_list_of_films(session, offset, director, year, limit, sort_by)
     if not films:
         raise HTTPException(
