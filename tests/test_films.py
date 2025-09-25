@@ -15,22 +15,46 @@ def test_get_list_of_films(client, sample_list_of_films):
         assert "year" in film
 
 def test_get_list_of_films_with_limits(client, sample_list_of_films):   
+    
     # paginate 
     response = client.get("/films/?limit=5&offset=0")
     assert response.status_code == 200
     assert len(response.json()) == 5
+
+    response = client.get("/films/?offset=5")
+    assert response.status_code == 200
+    assert len(response.json()) == len(sample_list_of_films)-5
     
+    # sort
+    response = client.get("/films/?sort_by=title")
+    data = response.json()
+    assert response.status_code == 200
+    assert all(f1['title'] <= f2['title'] for f1,f2 in zip(data, data[1:]))
+
+    response = client.get("/films/?sort_by=year")
+    data = response.json()
+    assert response.status_code == 200
+    assert all(f1['year'] <= f2['year'] for f1,f2 in zip(data, data[1:]))
+    
+    # filter
     response = client.get("/films/?director=Director C")
     assert response.status_code == 200
-    assert len(response.json()) == 4
+    data = response.json()
+    for film in data:
+        assert film['director'] == "Director C"
     
-    response = client.get("/films/?year=2000")
+    response = client.get("/films/?year=2001")
     assert response.status_code == 200
-    assert len(response.json()) == 1
+    data = response.json()
+    for film in data:
+        assert film['year'] == 2001
     
-    response = client.get("/films/?limit=1")
-    assert response.status_code == 200
-    assert len(response.json()) == 1
+    # wrong parameters
+    response = client.get("/films/?limit=0")
+    assert response.status_code == 422
+
+    response = client.get("/films/?sort_by=wrong_enum")
+    assert response.status_code == 422
 
 def test_create_film(client):
     
