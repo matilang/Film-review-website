@@ -17,6 +17,7 @@ def test_add_review(client, sample_film, sample_user_registration, sample_user_l
         
     assert response.status_code == 201
     assert response.json()['film_id'] == film_id
+    assert response.json()['user_id'] == sample_user_registration.id
     assert response.json()['review_text'] == review
     assert response.json()['rating'] == rating
     

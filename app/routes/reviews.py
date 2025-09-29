@@ -12,7 +12,7 @@ async def add_review(review : ReviewCreate,
                      session : SessionDep,
                      current_user : UserDep
                      ):
-    create_review = crud.add_review(review, session)
+    create_review = crud.add_review(review, session, current_user)
     if not create_review:
         raise HTTPException(status_code=404, detail="Film not found")
     # backgroundemail.add_task(write_message,"my.email@wp.pl", "Review created!!")
