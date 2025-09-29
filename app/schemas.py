@@ -25,6 +25,7 @@ class ReviewCreate(BaseModel):
 class ReviewRead(BaseModel):
     id : int
     film_id : int
+    user_id : int
     review_text : str
     rating : float
     

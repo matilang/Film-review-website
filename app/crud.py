@@ -63,12 +63,14 @@ def delete_film(film_id : int, db : Session):
     db.commit()
     return True
 
-def add_review(review : ReviewCreate, db : Session):
+def add_review(review : ReviewCreate, db : Session, current_user : UserInDb):
+    user = db.get(User, current_user.id)
     film = db.get(Film, review.film_id)
     if not film:
         return None
     new_review = Review(**review.model_dump())
     new_review.film = film
+    new_review.user = user
     db.add(new_review)
     db.commit()
     db.refresh(new_review)
