@@ -14,10 +14,10 @@ The project's focus is on practical applications using FastAPI, relational datab
 
 ## Future plans
 
-1. Developing tests for the backend
-2. Learn and project more developed database (PostgreSQL) while developing new features of setting up accounts
-3. Build a simple front for the website in React.js
-4. Deploy project to the web 
+1. Build a simple front for the website in React.js
+2. Upload film database from IMDb (using IMDb API)
+3. Manage dynamically the film database
+4. Deploy project to the web
 
 
 
