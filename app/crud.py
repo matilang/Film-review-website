@@ -79,8 +79,6 @@ def add_review(review : ReviewCreate, db : Session, current_user : UserInDb):
 def get_all_reviews(film_id : int, db: Session):
     statement = select(Review).where(Review.film_id == film_id)
     result = db.exec(statement).all()
-    if not result:
-        return None
     return [ReviewRead.model_validate(r) for r in result]
         
 def get_rating_average(film_id : int, db : Session):

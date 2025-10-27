@@ -21,8 +21,6 @@ async def add_review(review : ReviewCreate,
 @router.get("/reviews", response_model=list[ReviewRead])
 async def get_all_reviews(film_id : int, session: SessionDep):
     reviews_list = crud.get_all_reviews(film_id, session)
-    if not reviews_list:
-        raise HTTPException(status_code=404, detail="Reviews not found")
     return reviews_list
     
 @router.get("/rating")

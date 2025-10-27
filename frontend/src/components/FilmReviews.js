@@ -7,25 +7,43 @@ export default function FilmReviews ({filmId}) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:8000/films/${filmId}/reviews`)
-            .then((response) => {
+        const controller = new AbortController();
+        const load = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/films/${filmId}/reviews`, { signal: controller.signal });
                 if(!response.ok) {
-                    throw new Error("Błąd sieci")
+                    throw new Error("Network error" );
                 }
-                return response.json()
-            })
-            .then((data) => {
+                const data = await response.json();
                 setReviews(data);
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    setError(err.message || 'Loading error');
+                }
+            } finally {
                 setLoading(false);
-            })
-            .catch((err) => {
-                setError(err.message);
-                setLoading(false);
-            });
+            }
+        }
+
+        load();
+        return () => controller.abort();
     }, [filmId])
 
-    if(loading) return <p>Ładowanie...</p>
-    if(error) return <p>Błąd: {error}</p>
+    if(loading) return <p>Loading...</p>
+    if(error) return (
+        <div>
+            <p>Błąd: {error}</p>
+            <button onClick={() => window.location.reload()}>Try again</button>
+        </div>
+    )
+
+    if(!loading && reviews.length === 0) return (
+        <div>
+            <p>No reviews</p>
+        </div>
+    )
 
     return(
         <div className="review-list">
