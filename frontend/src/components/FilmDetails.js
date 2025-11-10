@@ -3,11 +3,9 @@ import FilmReviews from "../components/FilmReviews";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-export default function FilmPage () {
+export default function FilmDetails () {
     const {filmId} = useParams();
     const [film, setFilm] = useState();
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:8000/films/${filmId}`)
@@ -21,15 +19,11 @@ export default function FilmPage () {
                 setFilm(data);
                 setLoading(false);
             })
-            .catch((err) => {
-                setError(err.message);
-                setLoading(false);
-            });
     }, [filmId])
 
-    if(loading) return <p>Ładowanie...</p>
-    if(error) return <p>Błąd: {error}</p>
-
+    if(!film) {
+        return <p>Ładowanie filmu...</p>
+    }
 
     return(
         <div className="film-page">
