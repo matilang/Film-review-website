@@ -6,12 +6,14 @@ import { useParams } from "react-router-dom";
 export default function FilmDetails () {
     const {filmId} = useParams();
     const [film, setFilm] = useState();
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:8000/films/${filmId}`)
             .then((response) => {
                 if(!response.ok) {
-                    throw new Error("Błąd sieci")
+                    throw new Error("Network Error")
                 }
                 return response.json()
             })
@@ -19,11 +21,14 @@ export default function FilmDetails () {
                 setFilm(data);
                 setLoading(false);
             })
+            .catch((err) => {
+                setError(err.message);
+                setLoading(false);
+            });
     }, [filmId])
 
-    if(!film) {
-        return <p>Ładowanie filmu...</p>
-    }
+    if(loading) return <p>Loading...</p>
+    if(error) return <p>Error: {error}</p>
 
     return(
         <div className="film-page">

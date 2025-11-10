@@ -10,7 +10,7 @@ export default function FilmList (){
         fetch("http://127.0.0.1:8000/films/")
             .then((response) => {
                 if(!response.ok) {
-                    throw new Error("Błąd sieci")
+                    throw new Error("Network Error")
                 }
                 return response.json()
             })
